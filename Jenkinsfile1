@@ -5,7 +5,7 @@ pipeline {
         TERRAFORM_MODULE_REPO = "https://github.com/saikiranpi/Terraform_Modules.git"
     }
     stages {
-        stage (For Parallel Stages) {
+        stage ('For Parallel Stages') {
             parallel {
                 stage('Deploy To Development') {
                     agent {label 'DEV'}
