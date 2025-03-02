@@ -20,12 +20,14 @@ pipeline {
                     }
                     stages {
                         stage ('Clone Terraform Modules') {
-                            sh 'pwd'
-                            sh 'rm -rf terraform-modules'
-                            sh 'ls -al'
-                            sh "git clone ${TERRAFORM_MODULE_REPO} terraform modules"
-                            sh 'ls -al terraform-modules/devlopment'
-                            sh 'find terraform-modules -name "*.tf"'
+                            steps {
+                                sh 'pwd'
+                                sh 'rm -rf terraform-modules'
+                                sh 'ls -al'
+                                sh "git clone ${TERRAFORM_MODULE_REPO} terraform-modules"
+                                sh 'ls -al terraform-modules/development'
+                                sh 'find terraform-modules/development -name "*.tf"'
+                            }
                         }
                         stage ('Terraform Init & Plan') {
                             when {
