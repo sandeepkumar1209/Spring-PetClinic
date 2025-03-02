@@ -5,21 +5,21 @@ pipeline {
         TERRAFORM_MODULE_REPO = "https://github.com/saikiranpi/Terraform_Modules.git"
     }
     stages {
-        stage ('For Parallel Stages') {
+        stage('For Parallel Stages') {
             parallel {
                 stage('Deploy To Development') {
-                    agent {label 'DEV'}
+                    agent { label 'DEV' }
                     environment {
-                        DEV_ACCOUNT = "225989353406"
+                        DEV_AWS_ACCOUNT = "225989353406"
                         DEVDEFAULTAMI = "ami-04b4f1a9cf54c11d0"
-                        TERRAFORM_APPLY = "YES"
-                        TERRAFORM_DESTROY = "NO"
+                        TERRAFORM_APPLY = "NO" // Set to YES to trigger apply
+                        TERRAFORM_DESTROY = "YES" // Set to YES if you want to destroyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
                     }
                     when {
                         branch 'development'
                     }
                     stages {
-                        stage ('Clone Terraform Modules') {
+                        stage('Clone Terraform Modules') {
                             steps {
                                 sh 'pwd'
                                 sh 'rm -rf terraform-modules'
@@ -29,21 +29,21 @@ pipeline {
                                 sh 'find terraform-modules/development -name "*.tf"'
                             }
                         }
-                        stage ('Terraform Init & Plan') {
+                        stage('Terraform Init & Plan') {
                             when {
                                 expression {
                                     "${env.TERRAFORM_APPLY}" == 'YES'
                                 }
                             }
                             steps {
-                                dir('terraform-modules/development') { // Navigate to development directory  
+                                dir('terraform-modules/development') {  // Navigate to development directory
                                     sh 'terraform init'
                                     sh 'terraform validate'
-                                    sh 'terraform pan -var-file=terraform.tfvars'
+                                    sh 'terraform plan -var-file=terraform.tfvars'
                                 }
                             }
                         }
-                        stage ('Terraform Apply') {
+                        stage('Terraform Apply') {
                             when {
                                 expression {
                                     "${env.TERRAFORM_APPLY}" == 'YES'
@@ -55,7 +55,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage ('Terraform Destroy') {
+                        stage('Terraform Destroy') {
                             when {
                                 expression {
                                     "${env.TERRAFORM_DESTROY}" == 'YES'
@@ -69,10 +69,9 @@ pipeline {
                                 }
                             }
                         }
-
                     }
+                }
             }
-
         }
     }
     post {
@@ -89,5 +88,4 @@ pipeline {
             echo "I always run."
         }
     }
-}
 }
